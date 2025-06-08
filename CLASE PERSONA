@@ -1,0 +1,17 @@
+# clase_persona.py
+
+# Esta clase representa a una persona con nombre y edad.
+class Persona:
+    def __init__(self, nombre, edad):
+        self.nombre = nombre
+        self.edad = edad
+
+    def saludar(self):
+        print(f"Hola, mi nombre es {self.nombre} y tengo {self.edad} años.")
+
+
+# Crear un objeto (una instancia) de la clase Persona
+persona1 = Persona("Juan", 20)
+
+# Usar el método saludar
+persona1.saludar()

@@ -1,0 +1,75 @@
+// Clase base: Empleado
+class Empleado {
+    // Encapsulamiento: atributos privados
+    private String nombre;
+    private double salario;
+
+    // Constructor
+    public Empleado(String nombre, double salario) {
+        this.nombre = nombre;
+        this.salario = salario;
+    }
+
+    // Métodos getter y setter (encapsulamiento)
+    public String getNombre() {
+        return nombre;
+    }
+
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+
+    public double getSalario() {
+        return salario;
+    }
+
+    public void setSalario(double salario) {
+        this.salario = salario;
+    }
+
+    // Método que será sobrescrito (polimorfismo)
+    public String mostrarInformacion() {
+        return "Empleado: " + nombre + " | Salario: $" + salario;
+    }
+}
+
+// Clase derivada: Gerente (herencia de Empleado)
+class Gerente extends Empleado {
+    private String departamento;
+
+    // Constructor
+    public Gerente(String nombre, double salario, String departamento) {
+        super(nombre, salario); // Llama al constructor de la clase base
+        this.departamento = departamento;
+    }
+
+    // Método específico de Gerente
+    public String getDepartamento() {
+        return departamento;
+    }
+
+    public void setDepartamento(String departamento) {
+        this.departamento = departamento;
+    }
+
+    // Polimorfismo: sobrescritura del método de la clase base
+    @Override
+    public String mostrarInformacion() {
+        return "Gerente: " + getNombre() + " | Departamento: " + departamento + " | Salario: $" + getSalario();
+    }
+}
+
+// Clase principal
+public class Main {
+    public static void main(String[] args) {
+        // Crear instancia de Empleado
+        Empleado emp1 = new Empleado("Carlos", 1200.0);
+        
+        // Crear instancia de Gerente
+        Gerente ger1 = new Gerente("Lucía", 2000.0, "Recursos Humanos");
+
+        // Mostrar información (polimorfismo)
+        System.out.println(emp1.mostrarInformacion()); // Llama al método de Empleado
+        System.out.println(ger1.mostrarInformacion()); // Llama al método sobrescrito de Gerente
+    }
+}

@@ -1,0 +1,59 @@
+// Archivo: Persona.java
+
+/**
+ * Clase Persona.
+ * Representa a una persona con nombre, edad y ciudad.
+ * Demuestra el uso de constructores por defecto y parametrizados.
+ */
+public class Persona {
+    private String nombre;
+    private int edad;
+    private String ciudad;
+
+    /**
+     * Constructor por defecto.
+     * Inicializa los atributos con valores genéricos.
+     */
+    public Persona() {
+        this.nombre = "Sin nombre";
+        this.edad = 0;
+        this.ciudad = "Desconocida";
+    }
+
+    /**
+     * Constructor parametrizado.
+     * Inicializa los atributos con valores proporcionados.
+     * @param nombre Nombre de la persona.
+     * @param edad Edad de la persona.
+     */
+    public Persona(String nombre, int edad) {
+        this.nombre = nombre;
+        this.edad = edad;
+        this.ciudad = "Desconocida";
+    }
+
+    /**
+     * Ejemplo de sobrecarga de constructor.
+     * Inicializa todos los atributos con valores proporcionados.
+     * @param nombre Nombre de la persona.
+     * @param edad Edad de la persona.
+     * @param ciudad Ciudad de residencia.
+     */
+    public Persona(String nombre, int edad, String ciudad) {
+        this.nombre = nombre;
+        this.edad = edad;
+        this.ciudad = ciudad;
+    }
+
+    /**
+     * Muestra la información de la persona.
+     */
+    public void mostrarInformacion() {
+        System.out.println("Nombre: " + this.nombre);
+        System.out.println("Edad: " + this.edad);
+        System.out.println("Ciudad: " + this.ciudad);
+        System.out.println("-----------------------------");
+    }
+}
+
+

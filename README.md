@@ -1,18 +1,20 @@
-# Programa: Ejemplo de Constructores en Java
+# POO-Java-Proyecto-[Coello]
 
-**Estudiante:** Jose Gregorio Coello
+Este proyecto es una práctica de Programación Orientada a Objetos en Java.
 
-## Descripción
+## 📌 Funcionalidad
+- Muestra un menú básico en consola.
+- Permite registrar tareas simuladas.
+- Muestra tareas registradas.
+- Da mensajes de bienvenida y salida.
 
-Este programa en Java demuestra el uso de **constructores por defecto**, **constructores parametrizados** y **sobrecarga de constructores** mediante una clase `Persona` que modela datos básicos de una persona.  
-Incluye una clase principal `Main` que crea instancias de `Persona` usando los distintos constructores.
+## 📁 Estructura de paquetes
+- **modelo:** Clase `Tarea`
+- **servicio:** Clase `TareaServicio`
+- **vista:** Clase `MenuVista`
+- **dashboard:** Clase `Dashboard`
 
-## Ejecución
-
-Al ejecutar el programa se crean tres objetos `Persona`:
-
-- Uno con valores por defecto.
-- Uno con nombre y edad.
-- Uno con nombre, edad y ciudad.
-
-Cada objeto muestra su información en consola.
+## 🚀 Cómo ejecutar
+1. Clona este repositorio.
+2. Abre el proyecto en tu IDE (NetBeans, IntelliJ o Eclipse).
+3. Ejecuta `Dashboard.java`.

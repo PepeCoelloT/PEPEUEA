@@ -1,0 +1,134 @@
+// Archivo: com/tunombre/proyecto/modelo/Tarea.java
+package com.tunombre.proyecto.modelo;
+
+/**
+ * Representa una tarea del proyecto.
+ */
+public class Tarea {
+    private String descripcion;
+
+    public Tarea(String descripcion) {
+        this.descripcion = descripcion;
+    }
+
+    public String getDescripcion() {
+        return descripcion;
+    }
+
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
+    }
+}
+
+// Archivo: com/tunombre/proyecto/servicio/TareaServicio.java
+package com.tunombre.proyecto.servicio;
+
+import com.tunombre.proyecto.modelo.Tarea;
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * Servicio que gestiona las tareas.
+ */
+public class TareaServicio {
+    private List<Tarea> tareas = new ArrayList<>();
+
+    public void registrarTarea(String descripcion) {
+        tareas.add(new Tarea(descripcion));
+    }
+
+    public List<Tarea> obtenerTareas() {
+        return tareas;
+    }
+}
+
+// Archivo: com/tunombre/proyecto/vista/MenuVista.java
+package com.tunombre.proyecto.vista;
+
+import java.util.Scanner;
+
+/**
+ * Vista del menú en consola.
+ */
+public class MenuVista {
+    private Scanner scanner = new Scanner(System.in);
+
+    public void mostrarMenu() {
+        System.out.println("========== Bienvenido al Dashboard ==========");
+        System.out.println("1. Registrar tarea");
+        System.out.println("2. Mostrar tareas");
+        System.out.println("3. Salir");
+        System.out.print("Seleccione una opción: ");
+    }
+
+    public int leerOpcion() {
+        return scanner.nextInt();
+    }
+
+    public String leerDescripcionTarea() {
+        System.out.print("Ingrese la descripción de la tarea: ");
+        scanner.nextLine(); // Limpiar buffer
+        return scanner.nextLine();
+    }
+}
+
+// Archivo: com/tunombre/proyecto/dashboard/Dashboard.java
+package com.tunombre.proyecto.dashboard;
+
+import com.tunombre.proyecto.servicio.TareaServicio;
+import com.tunombre.proyecto.vista.MenuVista;
+
+/**
+ * Clase principal que gestiona el Dashboard de tareas.
+ */
+public class Dashboard {
+
+    private TareaServicio tareaServicio;
+    private MenuVista menuVista;
+
+    /**
+     * Inicializa el Dashboard.
+     */
+    public Dashboard() {
+        tareaServicio = new TareaServicio();
+        menuVista = new MenuVista();
+    }
+
+    /**
+     * Ejecuta el menú principal del Dashboard.
+     */
+    public void iniciar() {
+        boolean salir = false;
+
+        while (!salir) {
+            menuVista.mostrarMenu();
+            int opcion = menuVista.leerOpcion();
+
+            switch (opcion) {
+                case 1:
+                    String descripcion = menuVista.leerDescripcionTarea();
+                    tareaServicio.registrarTarea(descripcion);
+                    System.out.println("✅ Tarea registrada.\n");
+                    break;
+                case 2:
+                    System.out.println("===== Tareas registradas =====");
+                    tareaServicio.obtenerTareas().forEach(
+                        tarea -> System.out.println("- " + tarea.getDescripcion())
+                    );
+                    System.out.println();
+                    break;
+                case 3:
+                    System.out.println("👋 Saliendo del Dashboard. ¡Hasta pronto!");
+                    salir = true;
+                    break;
+                default:
+                    System.out.println("⚠️ Opción inválida.");
+            }
+        }
+    }
+
+    public static void main(String[] args) {
+        Dashboard dashboard = new Dashboard();
+        dashboard.iniciar();
+    }
+}

@@ -1,0 +1,116 @@
+import os
+
+class Inventario:
+    def __init__(self, archivo='inventario.txt'):
+        self.archivo = archivo
+        self.productos = {}
+        self.cargar_inventario()
+
+    def cargar_inventario(self):
+        """Carga los productos desde el archivo al iniciar el programa."""
+        if not os.path.exists(self.archivo):
+            print(f"No se encontró el archivo {self.archivo}. Se creará uno nuevo.")
+            try:
+                with open(self.archivo, 'w') as f:
+                    pass  # Crear archivo vacío
+            except PermissionError:
+                print("Error: No se tienen permisos para crear el archivo.")
+            return
+
+        try:
+            with open(self.archivo, 'r') as f:
+                for linea in f:
+                    try:
+                        nombre, cantidad = linea.strip().split(',')
+                        self.productos[nombre] = int(cantidad)
+                    except ValueError:
+                        print(f"Advertencia: línea corrupta ignorada -> {linea.strip()}")
+            print("Inventario cargado correctamente desde el archivo.")
+        except FileNotFoundError:
+            print("Archivo no encontrado al intentar cargar el inventario.")
+        except PermissionError:
+            print("Error: No se tienen permisos para leer el archivo de inventario.")
+
+    def guardar_inventario(self):
+        """Guarda el inventario actual en el archivo."""
+        try:
+            with open(self.archivo, 'w') as f:
+                for nombre, cantidad in self.productos.items():
+                    f.write(f"{nombre},{cantidad}\n")
+            print("Inventario guardado exitosamente en el archivo.")
+        except PermissionError:
+            print("Error: No se tienen permisos para escribir en el archivo de inventario.")
+
+    def añadir_producto(self, nombre, cantidad):
+        """Añade un producto al inventario o actualiza la cantidad si ya existe."""
+        if nombre in self.productos:
+            self.productos[nombre] += cantidad
+        else:
+            self.productos[nombre] = cantidad
+        self.guardar_inventario()
+
+    def eliminar_producto(self, nombre):
+        """Elimina un producto del inventario."""
+        if nombre in self.productos:
+            del self.productos[nombre]
+            self.guardar_inventario()
+            print(f"Producto '{nombre}' eliminado.")
+        else:
+            print(f"Producto '{nombre}' no encontrado.")
+
+    def actualizar_producto(self, nombre, cantidad):
+        """Actualiza la cantidad de un producto existente."""
+        if nombre in self.productos:
+            self.productos[nombre] = cantidad
+            self.guardar_inventario()
+            print(f"Producto '{nombre}' actualizado a {cantidad}.")
+        else:
+            print(f"Producto '{nombre}' no encontrado.")
+
+    def mostrar_inventario(self):
+        """Muestra todos los productos del inventario."""
+        if not self.productos:
+            print("El inventario está vacío.")
+        else:
+            print("\nInventario actual:")
+            for nombre, cantidad in self.productos.items():
+                print(f"- {nombre}: {cantidad}")
+
+def menu():
+    inv = Inventario()
+    while True:
+        print("\n--- Sistema de Gestión de Inventarios ---")
+        print("1. Mostrar inventario")
+        print("2. Añadir producto")
+        print("3. Actualizar producto")
+        print("4. Eliminar producto")
+        print("5. Salir")
+        opcion = input("Seleccione una opción: ")
+
+        if opcion == '1':
+            inv.mostrar_inventario()
+        elif opcion == '2':
+            nombre = input("Nombre del producto: ")
+            try:
+                cantidad = int(input("Cantidad: "))
+                inv.añadir_producto(nombre, cantidad)
+            except ValueError:
+                print("Error: La cantidad debe ser un número entero.")
+        elif opcion == '3':
+            nombre = input("Nombre del producto a actualizar: ")
+            try:
+                cantidad = int(input("Nueva cantidad: "))
+                inv.actualizar_producto(nombre, cantidad)
+            except ValueError:
+                print("Error: La cantidad debe ser un número entero.")
+        elif opcion == '4':
+            nombre = input("Nombre del producto a eliminar: ")
+            inv.eliminar_producto(nombre)
+        elif opcion == '5':
+            print("Saliendo del sistema...")
+            break
+        else:
+            print("Opción no válida. Intente de nuevo.")
+
+if __name__ == "__main__":
+    menu()

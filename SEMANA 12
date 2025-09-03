@@ -1,0 +1,219 @@
+import java.util.*;
+
+// ---------------- CLASE LIBRO ----------------
+final class Libro {
+    private final String isbn;
+    private final String titulo;
+    private final String autor;
+    private final String categoria;
+
+    public Libro(String isbn, String titulo, String autor, String categoria) {
+        if (isbn == null || isbn.isBlank() ||
+            titulo == null || titulo.isBlank() ||
+            autor == null || autor.isBlank() ||
+            categoria == null || categoria.isBlank()) {
+            throw new IllegalArgumentException("Ningún campo puede ser nulo o vacío");
+        }
+        this.isbn = isbn;
+        this.titulo = titulo;
+        this.autor = autor;
+        this.categoria = categoria;
+    }
+
+    public String getIsbn() {
+        return isbn;
+    }
+    public String getTitulo() {
+        return titulo;
+    }
+    public String getAutor() {
+        return autor;
+    }
+    public String getCategoria() {
+        return categoria;
+    }
+
+    @Override
+    public String toString() {
+        return "[" + isbn + "] " + titulo + " - " + autor + " (" + categoria + ")";
+    }
+}
+
+// ---------------- CLASE USUARIO ----------------
+class Usuario {
+    private String id;
+    private String nombre;
+    private List<String> isbnsPrestados;
+
+    public Usuario(String id, String nombre) {
+        if (id == null || id.isBlank() || nombre == null || nombre.isBlank()) {
+            throw new IllegalArgumentException("Id y nombre no pueden ser nulos o vacíos");
+        }
+        this.id = id;
+        this.nombre = nombre;
+        this.isbnsPrestados = new ArrayList<>();
+    }
+
+    public String getId() {
+        return id;
+    }
+    public String getNombre() {
+        return nombre;
+    }
+    public List<String> getIsbnsPrestados() {
+        return isbnsPrestados;
+    }
+
+    @Override
+    public String toString() {
+        return id + " - " + nombre;
+    }
+}
+
+// ---------------- CLASE BIBLIOTECA ----------------
+class Biblioteca {
+    private Map<String, Libro> catalogoPorIsbn;
+    private Map<String, Usuario> usuariosPorId;
+    private Set<String> isbnsPrestados;
+
+    public Biblioteca() {
+        this.catalogoPorIsbn = new HashMap<>();
+        this.usuariosPorId = new HashMap<>();
+        this.isbnsPrestados = new HashSet<>();
+    }
+
+    // Añadir/Quitar libros
+    public void añadirLibro(Libro libro) {
+        catalogoPorIsbn.put(libro.getIsbn(), libro);
+    }
+
+    public void quitarLibro(String isbn) {
+        if (isbnsPrestados.contains(isbn)) {
+            System.out.println("No se puede quitar, el libro está prestado.");
+            return;
+        }
+        catalogoPorIsbn.remove(isbn);
+    }
+
+    // Registrar/Dar de baja usuarios
+    public void registrarUsuario(Usuario u) {
+        usuariosPorId.put(u.getId(), u);
+    }
+
+    public void darBajaUsuario(String id) {
+        Usuario u = usuariosPorId.get(id);
+        if (u != null && u.getIsbnsPrestados().isEmpty()) {
+            usuariosPorId.remove(id);
+        } else {
+            System.out.println("No se puede dar de baja: el usuario tiene libros prestados.");
+        }
+    }
+
+    // Prestar/Devolver libros
+    public void prestarLibro(String idUsuario, String isbn) {
+        Usuario u = usuariosPorId.get(idUsuario);
+        Libro l = catalogoPorIsbn.get(isbn);
+        if (u == null || l == null) {
+            System.out.println("Usuario o libro no existen.");
+            return;
+        }
+        if (isbnsPrestados.contains(isbn)) {
+            System.out.println("Libro ya prestado.");
+            return;
+        }
+        u.getIsbnsPrestados().add(isbn);
+        isbnsPrestados.add(isbn);
+    }
+
+    public void devolverLibro(String idUsuario, String isbn) {
+        Usuario u = usuariosPorId.get(idUsuario);
+        if (u == null) return;
+        if (u.getIsbnsPrestados().remove(isbn)) {
+            isbnsPrestados.remove(isbn);
+        }
+    }
+
+    // Buscar libros
+    public List<Libro> buscarPorTitulo(String texto) {
+        List<Libro> res = new ArrayList<>();
+        for (Libro l : catalogoPorIsbn.values()) {
+            if (l.getTitulo().toLowerCase().contains(texto.toLowerCase())) {
+                res.add(l);
+            }
+        }
+        return res;
+    }
+
+    public List<Libro> buscarPorAutor(String texto) {
+        List<Libro> res = new ArrayList<>();
+        for (Libro l : catalogoPorIsbn.values()) {
+            if (l.getAutor().toLowerCase().contains(texto.toLowerCase())) {
+                res.add(l);
+            }
+        }
+        return res;
+    }
+
+    public List<Libro> buscarPorCategoria(String texto) {
+        List<Libro> res = new ArrayList<>();
+        for (Libro l : catalogoPorIsbn.values()) {
+            if (l.getCategoria().toLowerCase().contains(texto.toLowerCase())) {
+                res.add(l);
+            }
+        }
+        return res;
+    }
+
+    // Listar libros prestados de un usuario
+    public List<Libro> listarPrestados(String idUsuario) {
+        Usuario u = usuariosPorId.get(idUsuario);
+        List<Libro> res = new ArrayList<>();
+        if (u != null) {
+            for (String isbn : u.getIsbnsPrestados()) {
+                Libro l = catalogoPorIsbn.get(isbn);
+                if (l != null) res.add(l);
+            }
+        }
+        return res;
+    }
+}
+
+// ---------------- MAIN (Flujo de prueba) ----------------
+public class Main {
+    public static void main(String[] args) {
+        Biblioteca biblioteca = new Biblioteca();
+
+        // Registrar usuarios
+        biblioteca.registrarUsuario(new Usuario("U1", "Ana"));
+        biblioteca.registrarUsuario(new Usuario("U2", "Luis"));
+
+        // Añadir libros
+        biblioteca.añadirLibro(new Libro("ISBN-001", "Clean Code", "Robert C. Martin", "Software"));
+        biblioteca.añadirLibro(new Libro("ISBN-002", "Effective Java", "Joshua Bloch", "Java"));
+
+        // Prestar libros
+        biblioteca.prestarLibro("U1", "ISBN-001");
+        biblioteca.prestarLibro("U2", "ISBN-002");
+
+        // Listar libros prestados de U1
+        System.out.println("Libros prestados de Ana:");
+        for (Libro l : biblioteca.listarPrestados("U1")) {
+            System.out.println(" - " + l);
+        }
+
+        // Devolver libro
+        biblioteca.devolverLibro("U1", "ISBN-001");
+
+        // Buscar por autor
+        System.out.println("\nBuscar libros por autor 'Bloch':");
+        for (Libro l : biblioteca.buscarPorAutor("Bloch")) {
+            System.out.println(" - " + l);
+        }
+
+        // Buscar por categoría
+        System.out.println("\nBuscar libros por categoría 'Software':");
+        for (Libro l : biblioteca.buscarPorCategoria("Software")) {
+            System.out.println(" - " + l);
+        }
+    }
+}

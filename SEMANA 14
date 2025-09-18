@@ -1,0 +1,156 @@
+import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+/**
+ * Tarea: Aplicación de Agenda Personal (Java Swing)
+ * 
+ * Cumple con:
+ * - JFrame principal
+ * - JTable (en JScrollPane) con columnas: Fecha (dd/MM/yyyy), Hora (HH:mm), Descripción
+ * - Entradas: JSpinner fecha, JSpinner hora, JTextField descripción
+ * - Botones: Agregar, Eliminar seleccionado, Salir
+ * - Validaciones y mensajes con JOptionPane
+ * - Organización con JPanel y layouts (BorderLayout + GridLayout)
+ * 
+ * Para compilar y ejecutar (JDK 8+):
+ *   javac AgendaPersonalApp.java && java AgendaPersonalApp
+ */
+public class AgendaPersonalApp extends JFrame {
+
+    private final JSpinner spFecha;
+    private final JSpinner spHora;
+    private final JTextField txtDescripcion;
+    private final JTable tabla;
+    private final DefaultTableModel modelo;
+
+    private final SimpleDateFormat fmtFecha = new SimpleDateFormat("dd/MM/yyyy");
+    private final SimpleDateFormat fmtHora  = new SimpleDateFormat("HH:mm");
+
+    public AgendaPersonalApp() {
+        super("Agenda Personal");
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLayout(new BorderLayout(10, 10));
+
+        // ===== Panel de entrada (NORTH) =====
+        JPanel panelEntrada = new JPanel(new GridLayout(3, 2, 8, 8));
+
+        // Fecha
+        panelEntrada.add(new JLabel("Fecha (dd/MM/yyyy):"));
+        spFecha = new JSpinner(new SpinnerDateModel(new Date(), null, null, java.util.Calendar.DAY_OF_MONTH));
+        spFecha.setEditor(new JSpinner.DateEditor(spFecha, "dd/MM/yyyy"));
+        panelEntrada.add(spFecha);
+
+        // Hora
+        panelEntrada.add(new JLabel("Hora (HH:mm):"));
+        // Modelo de hora independiente para no afectar el de fecha
+        spHora = new JSpinner(new SpinnerDateModel(new Date(), null, null, java.util.Calendar.MINUTE));
+        spHora.setEditor(new JSpinner.DateEditor(spHora, "HH:mm"));
+        panelEntrada.add(spHora);
+
+        // Descripción
+        panelEntrada.add(new JLabel("Descripción:"));
+        txtDescripcion = new JTextField();
+        panelEntrada.add(txtDescripcion);
+
+        add(panelEntrada, BorderLayout.NORTH);
+
+        // ===== Tabla de eventos (CENTER) =====
+        modelo = new DefaultTableModel(new Object[]{"Fecha", "Hora", "Descripción"}, 0) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                // La tabla es de solo lectura desde la UI
+                return false;
+            }
+        };
+        tabla = new JTable(modelo);
+        tabla.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        JScrollPane scroll = new JScrollPane(tabla);
+        add(scroll, BorderLayout.CENTER);
+
+        // ===== Panel de acciones (SOUTH) =====
+        JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        JButton btnAgregar = new JButton("Agregar");
+        JButton btnEliminar = new JButton("Eliminar seleccionado");
+        JButton btnSalir = new JButton("Salir");
+
+        // Listeners
+        btnAgregar.addActionListener(this::onAgregar);
+        btnEliminar.addActionListener(this::onEliminar);
+        btnSalir.addActionListener(e -> {
+            // Botón SALIR: cerrar ventana de forma segura
+            dispose();
+        });
+
+        panelBotones.add(btnAgregar);
+        panelBotones.add(btnEliminar);
+        panelBotones.add(btnSalir);
+        add(panelBotones, BorderLayout.SOUTH);
+
+        // Ajustes de ventana
+        setMinimumSize(new Dimension(720, 420));
+        setLocationRelativeTo(null); // Centrar
+    }
+
+    // ====== Lógica: Botón AGREGAR ======
+    private void onAgregar(ActionEvent e) {
+        String descripcion = txtDescripcion.getText() != null ? txtDescripcion.getText().trim() : "";
+
+        if (descripcion.isEmpty()) {
+            JOptionPane.showMessageDialog(
+                    this,
+                    "La descripción no puede estar vacía",
+                    "Validación",
+                    JOptionPane.WARNING_MESSAGE
+            );
+            txtDescripcion.requestFocusInWindow();
+            return;
+        }
+
+        Date fecha = (Date) spFecha.getValue();
+        Date hora = (Date) spHora.getValue();
+
+        String sFecha = fmtFecha.format(fecha);
+        String sHora  = fmtHora.format(hora);
+
+        modelo.addRow(new Object[]{sFecha, sHora, descripcion});
+
+        // Limpiar descripción y foco
+        txtDescripcion.setText("");
+        txtDescripcion.requestFocusInWindow();
+    }
+
+    // ====== Lógica: Botón ELIMINAR SELECCIONADO ======
+    private void onEliminar(ActionEvent e) {
+        int fila = tabla.getSelectedRow();
+        if (fila == -1) {
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Selecciona un evento primero",
+                    "Aviso",
+                    JOptionPane.INFORMATION_MESSAGE
+            );
+            return;
+        }
+
+        int opcion = JOptionPane.showConfirmDialog(
+                this,
+                "¿Eliminar el evento seleccionado?",
+                "Confirmar eliminación",
+                JOptionPane.YES_NO_OPTION
+        );
+
+        if (opcion == JOptionPane.YES_OPTION) {
+            modelo.removeRow(fila);
+        }
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> {
+            new AgendaPersonalApp().setVisible(true);
+        });
+    }
+}

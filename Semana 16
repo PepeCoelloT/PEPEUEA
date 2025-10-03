@@ -1,0 +1,63 @@
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+
+public class CapturaTeclaC extends JFrame {
+
+    public CapturaTeclaC() {
+        setTitle("Ejemplo Captura Tecla 'C'");
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setSize(400, 300);
+        setLocationRelativeTo(null);
+
+        // Modelo de lista
+        DefaultListModel<String> modelo = new DefaultListModel<>();
+        modelo.addElement("Elemento 1");
+        modelo.addElement("Elemento 2");
+        modelo.addElement("Elemento 3");
+
+        // Componente JList
+        JList<String> lista = new JList<>(modelo);
+        lista.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+
+        // Botón de ejemplo
+        JButton boton = new JButton("Botón de prueba");
+
+        // Panel principal
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.add(new JScrollPane(lista), BorderLayout.CENTER);
+        panel.add(boton, BorderLayout.SOUTH);
+
+        // =============== KEY BINDINGS ===============
+        // Se usa la tecla 'C'
+        InputMap inputMap = lista.getInputMap(JComponent.WHEN_FOCUSED);
+        ActionMap actionMap = lista.getActionMap();
+
+        inputMap.put(KeyStroke.getKeyStroke('C'), "accionC");
+
+        actionMap.put("accionC", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int index = lista.getSelectedIndex();
+                if (index != -1) {
+                    String seleccionado = modelo.get(index);
+                    System.out.println("Se presionó 'C' sobre: " + seleccionado);
+                    // Alterna texto con un asterisco como ejemplo
+                    if (seleccionado.endsWith("*")) {
+                        modelo.set(index, seleccionado.replace("*", ""));
+                    } else {
+                        modelo.set(index, seleccionado + "*");
+                    }
+                } else {
+                    System.out.println("Se presionó 'C', pero no hay selección en la lista.");
+                }
+            }
+        });
+
+        setContentPane(panel);
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> new CapturaTeclaC().setVisible(true));
+    }
+}
